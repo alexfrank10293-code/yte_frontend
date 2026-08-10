@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>StreamPure - YouTube Video Downloader</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-background": "#191c1d",
+                    "surface": "#f8f9fa",
+                    "primary-container": "#ff6b6b",
+                    "on-primary": "#ffffff",
+                    "primary": "#ae2f34",
+                    "secondary": "#5f5e5e"
+            },
+            "spacing": {
+                    "margin-mobile": "20px",
+                    "container-max": "1120px",
+                    "section-gap-sm": "64px",
+                    "section-gap-lg": "120px",
+                    "gutter": "24px"
+            },
+            "fontFamily": {
+                    "body-md": ["Montserrat"],
+                    "label-sm": ["Montserrat"],
+                    "display": ["Montserrat"],
+                    "body-lg": ["Montserrat"],
+                    "headline-md": ["Montserrat"],
+                    "headline-lg-mobile": ["Montserrat"],
+                    "headline-lg": ["Montserrat"],
+                    "label-md": ["Montserrat"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .elevation-surface { background: #ffffff; }
+        .elevation-card { box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.04); }
+        .elevation-modal { box-shadow: 0px 12px 32px rgba(0, 0, 0, 0.08); }
+        .transition-hover { transition: all 200ms ease-out; }
+        
+        .spinner {
+            border: 3px solid rgba(255, 107, 107, 0.2);
+            border-left-color: #FF6B6B;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex flex-col font-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface dark:bg-background w-full h-16 shadow-none">
+<div class="flex justify-between items-center max-w-container-max mx-auto px-gutter h-full">
+<div class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-container">
+                StreamPure
+            </div>
+<nav class="hidden md:flex gap-8 items-center">
+<a class="font-body-md text-body-md text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200" href="#">Features</a>
+<a class="font-body-md text-body-md text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200" href="#">How it Works</a>
+<a class="font-body-md text-body-md text-secondary dark:text-secondary-fixed-dim hover:text-primary-container transition-colors duration-200" href="#">Privacy</a>
+</nav>
+<button class="hidden md:block bg-primary-container text-on-primary font-label-md text-label-md px-6 py-2 rounded-lg hover:brightness-95 active:scale-95 transition-transform duration-200">
+                Go Premium
+            </button>
+<button class="md:hidden text-primary">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow flex flex-col items-center justify-center px-margin-mobile md:px-gutter py-section-gap-sm md:py-section-gap-lg max-w-container-max mx-auto w-full">
+<!-- Hero Section -->
+<div class="text-center mb-12 w-full max-w-3xl">
+<h1 class="font-display text-display text-on-background mb-4">YouTube Video Downloader</h1>
+<p class="font-body-lg text-body-lg text-secondary">
+                Extract with Quality. Simple. Fast. Clean. 
+                <span class="text-primary-container font-medium block mt-2">No ads, no clutter.</span>
+</p>
+</div>
+<!-- Input Card -->
+<div class="w-full max-w-2xl bg-surface-container-lowest rounded-xl p-8 mb-8 elevation-card transition-hover relative z-10">
+<div class="flex flex-col md:flex-row gap-4 items-center w-full">
+<div class="relative flex-grow w-full">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-secondary" data-icon="link">link</span>
+<input class="w-full h-14 pl-12 pr-4 bg-surface-bright rounded-lg border border-transparent focus:border-primary-container focus:ring-0 text-on-background font-body-md outline-none transition-colors" id="url-input" placeholder="Paste YouTube link here..." type="text" value=""/>
+</div>
+<button class="w-full md:w-auto h-14 px-8 bg-primary-container text-on-primary rounded-lg font-label-md text-label-md whitespace-nowrap hover:brightness-95 active:scale-95 transition-all duration-200 elevation-modal flex items-center justify-center gap-2" id="fetch-btn">
+                    Fetch Video
+                </button>
+</div>
+<!-- Loading State (Hidden by default) -->
+<div class="hidden flex items-center justify-center gap-3 mt-6" id="loading-state">
+<div class="spinner"></div>
+<span id="loading-text" class="font-label-md text-label-md text-secondary">Fetching...</span>
+</div>
+<!-- Error State (Hidden by default) -->
+<div class="hidden mt-4 p-3 bg-red-100 text-red-700 rounded-lg text-center font-label-md text-label-md" id="error-state">
+</div>
+</div>
+<!-- Video Result Container -->
+<div class="w-full max-w-3xl bg-surface-container-lowest rounded-xl p-6 elevation-card transition-hover hidden" id="result-container">
+<!-- Video Info -->
+<div class="flex flex-col md:flex-row gap-6 mb-8">
+<!-- Thumbnail -->
+<div class="w-full md:w-64 aspect-video rounded-lg overflow-hidden flex-shrink-0 bg-surface-variant relative group">
+<img id="video-thumbnail" alt="Video Thumbnail" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" src=""/>
+</div>
+<!-- Metadata -->
+<div class="flex flex-col justify-center">
+<h2 id="video-title" class="font-headline-md text-headline-md text-on-background mb-2 line-clamp-2"></h2>
+<p id="video-uploader" class="font-label-md text-label-md text-secondary mb-1"></p>
+</div>
+</div>
+<div class="w-full h-[1px] bg-surface-variant mb-8"></div>
+<!-- Download Options -->
+<div class="flex flex-col gap-6">
+<!-- Quality Selection Grid (Bento style) -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="qualities-grid">
+<!-- Formats will be injected here by app.js -->
+</div>
+<!-- Final Action -->
+<div class="mt-4 flex flex-col items-center gap-4">
+<button id="download-btn" class="w-full md:w-2/3 h-14 bg-primary-container text-on-primary rounded-xl font-headline-md text-headline-md shadow-[0_4px_14px_0_rgba(255,107,107,0.39)] hover:shadow-[0_6px_20px_rgba(255,107,107,0.23)] hover:brightness-105 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="download">download</span>
+                        Download Video
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low dark:bg-surface-dim w-full py-12 mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center max-w-container-max mx-auto px-gutter gap-6 md:gap-0">
+<div class="font-headline-md text-headline-md font-bold text-primary">
+                StreamPure
+            </div>
+<div class="font-label-md text-label-md text-secondary dark:text-secondary-fixed-dim">
+                © 2024 StreamPure Media. All rights reserved.
+            </div>
+</div>
+</footer>
+<script src="app.js"></script>
+</body></html>
