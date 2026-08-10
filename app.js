@@ -3,7 +3,7 @@
 // Change this to your Render URL when deployed
 // Example: const API_BASE_URL = 'https://yte-backend.onrender.com';
 // ==========================================
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = 'https://yte-backend.onrender.com';
 
 // DOM Elements
 const urlInput = document.getElementById('url-input');
